@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DermaCare AI | Prediction History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+  <body>
+    <div class="app-shell history-shell">
+      <aside class="sidebar-panel" data-aos="fade-right">
+        <div class="sidebar-brand">
+          <span class="logo-dot"></span>
+          <strong>DermaCare AI</strong>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/">Home</a>
+          <a href="#history">History</a>
+          <a href="/">About</a>
+          <a href="/">Support</a>
+        </nav>
+        <div class="sidebar-note">
+          <h6>Tip</h6>
+          <p>Use search and filters to quickly review recent predictions.</p>
+        </div>
+      </aside>
+      <main class="history-main">
+        <header class="topbar navbar-glass" id="mainNavbar">
+          <div class="container-fluid px-4 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <a href="/" class="brand-logo small-logo">
+                <span class="logo-dot"></span>
+                <strong>DermaCare AI</strong>
+              </a>
+              <div>
+                <p class="eyebrow mb-1">Prediction History</p>
+                <h2>Review your latest AI skin assessments</h2>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button id="themeToggle" class="theme-toggle btn btn-sm btn-glow"><i class="fas fa-moon"></i></button>
+              <select id="languageSelector" class="form-select form-select-sm language-select">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="mr">Marathi</option>
+              </select>
+            </div>
+          </div>
+        </header>
+
+        <section class="history-content container-fluid px-4 py-5">
+          <div class="filters-grid mb-4" data-aos="fade-up">
+            <div class="filter-card">
+              <label>Search</label>
+              <input id="historySearch" type="search" class="form-control" placeholder="Search disease, date, confidence" />
+            </div>
+            <div class="filter-card">
+              <label>Filter by disease</label>
+              <select id="filterDisease" class="form-select">
+                <option value="all">All Diseases</option>
+                <option>Actinic keratosis</option>
+                <option>Atopic Dermatitis</option>
+                <option>Benign keratosis</option>
+                <option>Dermatofibroma</option>
+                <option>Melanocytic nevus</option>
+                <option>Melanoma</option>
+                <option>Squamous cell carcinoma</option>
+                <option>Tinea Ringworm Candidiasis</option>
+                <option>Vascular lesion</option>
+              </select>
+            </div>
+            <div class="filter-card">
+              <label>Risk level</label>
+              <select id="filterRisk" class="form-select">
+                <option value="all">All Risks</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="filter-card">
+              <label>Sort</label>
+              <select id="sortHistory" class="form-select">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="confidence-desc">Confidence High</option>
+                <option value="confidence-asc">Confidence Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-panel glass-panel" data-aos="fade-up" data-aos-delay="100">
+            <table class="table history-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Preview</th>
+                  <th>Disease</th>
+                  <th>Confidence</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                {% for item in history_items %}
+                <tr data-disease="{{ item.disease }}" data-risk="{{ item.risk }}" data-confidence="{{ item.confidence }}" data-date="{{ item.date }}">
+                  <td>
+                    <strong>{{ item.date }}</strong><br />
+                    <small>{{ item.time or '' }}</small>
+                  </td>
+                  <td>
+                    <div class="table-thumb">
+                      <img src="{{ item.image_path }}" alt="Thumbnail" />
+                    </div>
+                  </td>
+                  <td>{{ item.disease }}</td>
+                  <td>{{ item.confidence }}%</td>
+                  <td><span class="badge risk-badge {{ item.risk | lower }}">{{ item.risk }}</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="5" class="text-muted text-center py-5">No history available yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>

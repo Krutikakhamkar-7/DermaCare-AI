@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DermaCare AI | Skin Disease Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+  <body>
+    <div id="pageLoader" class="page-loader">
+      <div class="loader-ring"></div>
+      <p>DermaCare AI is loading...</p>
+    </div>
+
+    <div class="app-shell">
+      <header class="topbar navbar-glass" id="mainNavbar">
+        <div class="container-fluid px-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <a href="#home" class="brand-logo">
+              <span class="logo-dot"></span>
+              <strong>DermaCare AI</strong>
+            </a>
+            <nav class="nav-links d-none d-lg-flex align-items-center gap-4">
+              <a href="#home" data-i18n-nav="home">Home</a>
+              <a href="#features" data-i18n-nav="features">Features</a>
+              <a href="#history" data-i18n-nav="history">History</a>
+              <a href="#about" data-i18n-nav="about">About</a>
+            </nav>
+            <div class="nav-actions d-flex align-items-center gap-3">
+              <button id="themeToggle" class="theme-toggle btn btn-sm btn-glow">
+                <i class="fas fa-moon"></i>
+              </button>
+              <select id="languageSelector" class="form-select form-select-sm language-select">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="mr">Marathi</option>
+              </select>
+              <a href="/history" class="btn btn-outline-light btn-sm">History</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero-section" id="home">
+          <div class="hero-backdrop"></div>
+          <div class="hero-particles">
+            <span class="particle"></span>
+            <span class="particle"></span>
+            <span class="particle"></span>
+            <span class="particle"></span>
+            <span class="particle"></span>
+          </div>
+          <div class="container-lg hero-content">
+            <div class="row align-items-center">
+              <div class="col-lg-6" data-aos="fade-up" data-aos-duration="900">
+                <p class="eyebrow">Premium AI Dermatology Assistant</p>
+                <h1>AI Skin Disease Detection & Smart Dermatology Assistant</h1>
+                <p class="lead">
+                  Upload a skin image and get instant AI-powered prediction, risk analysis,
+                  skincare guidance, and dermatologist recommendations.
+                </p>
+                <div class="hero-actions d-flex flex-wrap gap-3 mt-4">
+                  <a href="#uploadCard" class="btn btn-primary btn-lg">Analyze My Skin</a>
+                  <a href="#why" class="btn btn-soft">Why DermaCare?</a>
+                </div>
+              </div>
+              <div class="col-lg-6 text-center" data-aos="fade-left" data-aos-duration="900">
+                <div class="glow-ring p-4">
+                  <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=700&q=80" alt="AI Dermatology" class="hero-image" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="upload-section" id="uploadCard">
+          <div class="container-lg">
+            <div class="row align-items-center gy-5">
+              <div class="col-lg-6" data-aos="fade-right" data-aos-duration="900">
+                <div class="glass-panel upload-panel">
+                  <div class="panel-head">
+                    <div>
+                      <p class="eyebrow">Upload Image</p>
+                      <h2 data-i18n-key="upload_image_title">Upload your skin image</h2>
+                    </div>
+                    <span class="badge bg-info">AI Ready</span>
+                  </div>
+                  <form id="analyzeForm" action="/predict" method="POST" enctype="multipart/form-data">
+                    <div id="dropArea" class="drop-area">
+                      <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                      <p id="dropMessage">Drag & drop your image here or click to browse</p>
+                      <small>Supported: JPG, JPEG, PNG up to 5MB</small>
+                      <input id="skinInput" type="file" name="image" accept="image/png, image/jpeg" hidden />
+                    </div>
+                    <div id="previewPanel" class="preview-panel d-none">
+                      <div class="preview-thumb">
+                        <img id="previewImage" src="" alt="Preview" />
+                      </div>
+                      <div>
+                        <p id="previewName" class="preview-name"></p>
+                        <button type="button" id="removeImage" class="btn btn-link text-danger p-0">Remove image</button>
+                      </div>
+                    </div>
+                    <div id="qualityWarning" class="alert alert-warning d-none" role="alert">
+                      <strong>Image quality alert:</strong> <span id="qualityText"></span>
+                    </div>
+                    <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+                    <div class="d-flex flex-column flex-sm-row gap-3 align-items-center mt-4">
+                      <button id="analyzeButton" type="submit" class="btn btn-primary btn-xl">
+                        <span class="button-text" data-i18n-key="analyze">Analyze</span>
+                        <span class="spinner-border spinner-border-sm text-white d-none" role="status"></span>
+                      </button>
+                      <p class="text-muted mb-0">Instant results with smart guidance.</p>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="col-lg-6" data-aos="fade-left" data-aos-duration="900">
+                <div class="glass-panel stats-panel">
+                  <div class="stats-grid">
+                    <div class="stat-card">
+                      <h3 id="countDiseases" class="counter">9</h3>
+                      <p>Diseases Detectable</p>
+                    </div>
+                    <div class="stat-card">
+                      <h3 id="modelAccuracy" class="counter">97%</h3>
+                      <p>Model Accuracy</p>
+                    </div>
+                    <div class="stat-card">
+                      <h3 id="imagesAnalyzed" class="counter">12.4K</h3>
+                      <p>Images Analyzed</p>
+                    </div>
+                  </div>
+                  <div class="feature-cards mt-4">
+                    <div class="feature-card">
+                      <i class="fas fa-bolt"></i>
+                      <div>
+                        <h5>Fast Detection</h5>
+                        <p>Instant AI-driven insights.</p>
+                      </div>
+                    </div>
+                    <div class="feature-card">
+                      <i class="fas fa-shield-alt"></i>
+                      <div>
+                        <h5>Early Warning</h5>
+                        <p>Spot skin issues before they progress.</p>
+                      </div>
+                    </div>
+                    <div class="feature-card">
+                      <i class="fas fa-user-md"></i>
+                      <div>
+                        <h5>Dermatologist Guidance</h5>
+                        <p>Find specialists near you fast.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="feature-section" id="features">
+          <div class="container-lg">
+            <div class="section-head text-center" data-aos="fade-up">
+              <p class="eyebrow">Why Choose DermaCare</p>
+              <h2>Advanced AI care for better skin health</h2>
+            </div>
+            <div class="row gy-4 mt-4">
+              <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="info-card">
+                  <i class="fas fa-rocket"></i>
+                  <h5>Fast Detection</h5>
+                  <p>Detect skin conditions instantly with premium speed.</p>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="info-card">
+                  <i class="fas fa-heartbeat"></i>
+                  <h5>Early Warning</h5>
+                  <p>Receive smart alerts for suspicious skin changes.</p>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="info-card">
+                  <i class="fas fa-user-md"></i>
+                  <h5>Dermatologist Support</h5>
+                  <p>Get access to nearby specialists with one click.</p>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="info-card">
+                  <i class="fas fa-lightbulb"></i>
+                  <h5>Smart Recommendations</h5>
+                  <p>Receive tailored skincare, diet, and lifestyle tips.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="checklist-section" id="about">
+          <div class="container-lg">
+            <div class="row align-items-center gy-5">
+              <div class="col-lg-6" data-aos="fade-right">
+                <div class="glass-panel about-panel">
+                  <p class="eyebrow">Symptom Checklist</p>
+                  <h3>Share symptoms for better future analysis</h3>
+                  <div class="checklist-grid mt-4">
+                    <label class="checkbox-card">
+                      <input type="checkbox" />
+                      <span>Itching</span>
+                    </label>
+                    <label class="checkbox-card">
+                      <input type="checkbox" />
+                      <span>Redness</span>
+                    </label>
+                    <label class="checkbox-card">
+                      <input type="checkbox" />
+                      <span>Dryness</span>
+                    </label>
+                    <label class="checkbox-card">
+                      <input type="checkbox" />
+                      <span>Pain</span>
+                    </label>
+                    <label class="checkbox-card">
+                      <input type="checkbox" />
+                      <span>Swelling</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6" data-aos="fade-left">
+                <div class="glass-panel faq-panel">
+                  <p class="eyebrow">FAQ</p>
+                  <h3>Frequently Asked Questions</h3>
+                  <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="faqOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                          Is this diagnosis accurate?
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                          AI provides a fast preliminary analysis. Always follow up with a dermatologist for diagnosis.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="faqTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                          Is my image stored?
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                          Your upload is used only for prediction and history display. No image data is shared externally.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="faqThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                          Should I consult a doctor?
+                        </button>
+                      </h2>
+                      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                          Yes. DermaCare AI is a smart assistant, not a replacement for professional medical advice.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer-section">
+        <div class="container-lg">
+          <div class="row gy-4">
+            <div class="col-md-4">
+              <h5>DermaCare AI</h5>
+              <p>AI-based skin health insights with premium design and trusted guidance.</p>
+            </div>
+            <div class="col-md-4">
+              <h5>Quick Links</h5>
+              <ul class="footer-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="/history">History</a></li>
+              </ul>
+            </div>
+            <div class="col-md-4">
+              <h5>Disclaimer</h5>
+              <p>This system provides AI-based preliminary analysis and is not a replacement for professional medical advice.</p>
+            </div>
+          </div>
+          <div class="footer-bottom">
+            <p>© 2026 DermaCare AI. Designed for premium healthcare experiences.</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
